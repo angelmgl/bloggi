@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+    Confirmar correo
+{% endblock title %}
+
+
+{% block content %}
+    <h1>Verificar perfil</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Verificar</button>
+    </form>
+{% endblock content %}

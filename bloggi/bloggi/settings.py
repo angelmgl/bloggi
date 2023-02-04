@@ -29,7 +29,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-LOCAL_APPS = ["applications.users"]
+LOCAL_APPS = ["applications.users", "applications.core"]
 
 THIRD_PARTY_APPS = []
 
@@ -50,7 +50,7 @@ ROOT_URLCONF = "bloggi.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -76,7 +76,7 @@ DATABASES = {
         "USER": config["DB_USER"],
         "PASSWORD": config["DB_PASSWORD"],
         "HOST": config["DB_HOST"],
-        "PORT": config["DB_PORT"]
+        "PORT": config["DB_PORT"],
     }
 }
 
@@ -122,4 +122,11 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
+
+# EMAIL SETTINGS
+EMAIL_USE_TLS = True
+EMAIL_HOST = config["EMAIL_HOST"]
+EMAIL_HOST_USER = config["EMAIL_USER"]
+EMAIL_HOST_PASSWORD = config["EMAIL_PASSWORD"]
+EMAIL_PORT = config["EMAIL_PORT"]
