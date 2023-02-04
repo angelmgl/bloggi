@@ -1,0 +1,24 @@
+{
+  "name": "bloggi",
+  "version": "1.0.0",
+  "description": "A simple blog developed with Django",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tailwindcss -i ./bloggi/static/css/main.css -o ./bloggi/static/css/main.min.css --minify",
+    "watch": "npx tailwindcss -i ./bloggi/static/css/main.css -o ./bloggi/static/css/main.min.css -w --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angelmgl/bloggi.git"
+  },
+  "keywords": [],
+  "author": "Angel Alemany",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/angelmgl/bloggi/issues"
+  },
+  "homepage": "https://github.com/angelmgl/bloggi#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.2.4"
+  }
+}
