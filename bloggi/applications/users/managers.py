@@ -28,8 +28,8 @@ class UserManager(BaseUserManager, models.Manager):
         return user
 
     def create_user(self, username, email, full_name, password=None, **extra_fields):
-        self._create_user(
-            username, email, full_name, password, False, False, True, **extra_fields
+        return self._create_user(
+            username, email, full_name, password, False, False, False, **extra_fields
         )
 
     def create_superuser(

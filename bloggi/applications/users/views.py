@@ -4,20 +4,20 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
-
-from django.views.generic import View
-
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.views.generic import View, TemplateView
 from django.views.generic.edit import FormView
+from django.shortcuts import redirect, get_object_or_404
 
 from .forms import (
     UserRegisterForm,
     UserLoginForm,
     UpdatePasswordForm,
-    VerificationForm,
 )
 
-from .models import User
-from .functions import code_generator
+from .models import User, ActivationKey
+from .functions import generate_activation_key, send_activation_email
 
 
 class UserRegisterView(UserPassesTestMixin, FormView):
@@ -27,13 +27,15 @@ class UserRegisterView(UserPassesTestMixin, FormView):
     redirect_field_name = reverse_lazy("core_app:home")
 
     def test_func(self):
+        """
+        esta función ayuda a restringir el acceso a la vista de registro a los
+        usuarios que no han iniciado sesión, ya que la vista solo debería estar
+        disponible para los usuarios que aún no tienen una cuenta en la aplicación.
+        """
         return self.request.user.is_anonymous
 
     def form_valid(self, form):
-        # código de registro
-        code = code_generator()
-
-        User.objects.create_user(
+        user = User.objects.create_user(
             form.cleaned_data["username"],
             form.cleaned_data["email"],
             form.cleaned_data["full_name"],
@@ -41,15 +43,17 @@ class UserRegisterView(UserPassesTestMixin, FormView):
             gender=form.cleaned_data["gender"],
         )
 
-        # enviar código al email del user
-        subject = "Confirmar cuenta en Bloggi"
-        message = f"Tu código de verificación es {code}"
-        admin_email = "angel@girolabs.com"
-        destination = form.cleaned_data["email"]
+        activation_key = generate_activation_key(user)
+        activation_url = self.request.build_absolute_uri(
+            reverse("users_app:activate", args=[activation_key])
+        )
+        send_activation_email(user, activation_url)
 
-        send_mail(subject, message, admin_email, [destination])
+        return HttpResponseRedirect(reverse("users_app:wait"))
 
-        return HttpResponseRedirect(reverse("users_app:verification"))
+
+class WaitActivationView(TemplateView):
+    template_name = "users/wait.html"
 
 
 class UserLoginView(FormView):
@@ -93,11 +97,22 @@ class UpdatePasswordView(LoginRequiredMixin, FormView):
         return super(UpdatePasswordView, self).form_valid(form)
 
 
-class VerificationView(FormView):
-    template_name = "users/verification.html"
-    form_class = VerificationForm
-    success_url = reverse_lazy("core_app:home")
+class ActivateView(View):
+    def get(self, request, key):
+        # Get the activation key
+        activation_key = get_object_or_404(ActivationKey, key=key)
 
-    def form_valid(self, form):
+        # Activate the user account
+        user = activation_key.user
+        user.is_active = True
+        user.save()
 
-        return super(VerificationView, self).form_valid(form)
+        # Log in the user
+        # user = authenticate(username=user.username, password=user.password)
+        # login(request, user)
+
+        # Delete the activation key
+        activation_key.delete()
+
+        # Redirect to a success page
+        return redirect("core_app:home")

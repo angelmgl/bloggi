@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 from .managers import UserManager
@@ -26,3 +27,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['email', 'full_name']
 
     objects = UserManager()
+
+
+class ActivationKey(models.Model):
+    """ clase para generar una clave de activación """
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    key = models.CharField(max_length=40)
+    created_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.id} - {self.user.full_name}"

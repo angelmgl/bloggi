@@ -9,5 +9,6 @@ urlpatterns = [
     path("login/", views.UserLoginView.as_view(), name="login"),
     path("logout/", views.UserLogoutView.as_view(), name="logout"),
     path("password/", views.UpdatePasswordView.as_view(), name="password"),
-    path("verify/", views.VerificationView.as_view(), name="verification"),
+    path("activate/<str:key>/", views.ActivateView.as_view(), name="activate"),
+    path("wait/", views.WaitActivationView.as_view(), name="wait"),
 ]

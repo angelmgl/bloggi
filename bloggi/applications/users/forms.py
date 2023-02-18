@@ -95,13 +95,3 @@ class UpdatePasswordForm(forms.Form):
         if len(self.cleaned_data["new_password"]) <= 5:
             self.add_error("new_password", "La contraseña es muy corta")
 
-
-class VerificationForm(forms.Form):
-
-    code = forms.CharField(
-        label="Introduzca el código enviado a su correo",
-        required=True,
-        widget=forms.TextInput(
-            attrs={"placeholder": "Introduzca su código de verificación"}
-        ),
-    )
